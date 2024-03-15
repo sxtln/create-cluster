@@ -1,0 +1,4 @@
+.vscode
+*config
+*.txt
+*.code-workspace

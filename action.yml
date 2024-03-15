@@ -1,0 +1,48 @@
+name: 'deploy-cluster'
+description: 'deploy k8s cluster at sextillion.io'
+inputs:
+  node-type:
+    description: 'one of b1, b2.. b10'
+    required: true
+    default: 'b1'
+  node-count:
+    description: 'number of nodes in the cluster. currently 1'
+  api-key:
+    description: "sextillion's api key"
+    required: true
+  token:
+    required: true
+    description: 'github token that allow to upload artifact should be secrets.GITHUB_TOKEN'
+outputs:
+  cluster-id:
+    description: the id of the cluster that was provisioned. you need this value to delete the cluster
+    value: ${{steps.provision-cluster.clusterId}}
+  kube-config:
+    description: "the name of the kube config file that was uploaded to "
+    value: ${{ steps.provision-cluster.config-file }}
+author: Sagi Forbes Nagar for Sextillion.io
+branding:
+  color: 'purple'
+  icon: 'minimize'
+runs:
+  using: "composite"
+  steps:
+  - name: prepare environment
+    uses: actions/setup-python@v4
+    with:
+      python-version: 3.11
+  - name: provision k8s cluster
+    id: provision-cluster
+    shell: bash
+    run: |
+      python3 provision-cluster.py --node-count=${{inputs.node-count}} --node-type=${{inputs.node-type}} --apikey=${{inputs.api-key}} --output=k8s.config
+      echo "config-file=k8s.config" >> $GITHUB_OUTPUT
+
+  - name: upload configuration file
+    uses: actions/upload-artifact@v4
+    with:
+      path: ${{steps.provision-cluster.config-file}}
+      if-no-files-found: 'error'
+      name: ${{steps.provision-cluster.config-file}}
+      retention-days: 1
+      overwrite: true
