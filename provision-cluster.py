@@ -28,8 +28,9 @@ node_type = args.node_type
 
 req_headers = {'Authorization': f'Bearer {args.apikey}'}
 try:
-    req_data = {'nodeCount': node_count, 'nodeType': node_type}
     conn = http.client.HTTPSConnection('api.sextillion.io')
+    req_data = {'nodeCount': node_count, 'nodeType': node_type}
+    
     conn.request('POST', '/sc/cluster', json.dumps(req_data),
                  headers=req_headers)
     hres = conn.getresponse()
@@ -67,17 +68,17 @@ try:
             fileContent = hres.read()
             with open(args.output, 'wb') as file:
               file.write(fileContent)
-
             
             output_file=os.environ.get('GITHUB_OUTPUT') if os.environ.get('GITHUB_OUTPUT') else 'clusterId.txt'
             with open(output_file,'at') as file:
-              file.write(f'clusterId={clusterId}')
+              file.write(f'clusterId={clusterId}\n')
         else:
             print('failed to fetch configuration', hres.status)
             exit(1)
     else:
         print('failed to start cluster last known status', hres_data['stage'])
         exit(1)
+    
 except Exception as ex:
     print('failed to deploy cluster', ex)
     exit(1)
