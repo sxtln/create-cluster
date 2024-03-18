@@ -45,7 +45,7 @@ runs:
     run: |
       echo "config file is: ${{steps.provision-cluster.outputs.config_file}}"
       echo "path to config is: ${{steps.provision-cluster.outputs.config_path}}"
-      echo "provisioned cluster id is: ${{steps.provision-cluster.clusterId}}"
+      echo "provisioned cluster id is: ${{steps.provision-cluster.outputs.clusterId}}"
   - name: upload configuration file
     uses: actions/upload-artifact@v4
     with:
