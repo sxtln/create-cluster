@@ -1,12 +1,12 @@
-name: 'create-cluster'
-description: 'create a k8s cluster at sextillion.io'
+name: "create-cluster"
+description: "create a k8s cluster at sextillion.io"
 inputs:
   node-type:
-    description: 'one of b1, b2.. b10'
+    description: "one of b1, b2.. b10"
     required: true
-    default: 'b1'
+    default: "b1"
   node-count:
-    description: 'number of nodes in the cluster. currently 1'
+    description: "number of nodes in the cluster. currently 1"
   api-key:
     description: "sextillion's api key"
     required: true
@@ -17,40 +17,44 @@ outputs:
   kube-config:
     description: "the name of the kube config file that was uploaded to "
     value: ${{ steps.provision-cluster.outputs.config-file }}
+  cluster-ip:
+    description: the ip of the cluster master node
+    value: ${{ steps.provision-cluster.outputs.clusterIp}}
+
 author: Sagi Forbes Nagar for Sextillion.io
 branding:
-  color: 'purple'
-  icon: 'minimize'
+  color: "purple"
+  icon: "minimize"
 runs:
   using: "composite"
   steps:
-  - name: prepare environment
-    uses: actions/setup-python@v4
-    with:
-      python-version: 3.11
-  - name: provision k8s cluster
-    id: provision-cluster
-    env:
-      CONFIG_FILE_NAME: 'k8s.config'
-    shell: bash
-    run: |
-      python3 ${GITHUB_ACTION_PATH}/provision-cluster.py --node-count=${{inputs.node-count}} --node-type=${{inputs.node-type}} --apikey=${{inputs.api-key}} --output=${CONFIG_FILE_NAME}
-      
-      echo "config_file=${CONFIG_FILE_NAME}" >> $GITHUB_OUTPUT
-      echo "config_path=${PWD}/k8s.config" >> $GITHUB_OUTPUT
-      
-      cat $GITHUB_OUTPUT
-  - name: show info
-    shell: bash
-    run: |
-      echo "config file is: ${{steps.provision-cluster.outputs.config_file}}"
-      echo "path to config is: ${{steps.provision-cluster.outputs.config_path}}"
-      echo "provisioned cluster id is: ${{steps.provision-cluster.outputs.clusterId}}"
-  - name: upload configuration file
-    uses: actions/upload-artifact@v4
-    with:
-      path: ${{steps.provision-cluster.outputs.config_path}}
-      name: ${{steps.provision-cluster.outputs.config_file}}
-      if-no-files-found: error
-      retention-days: 1
-      overwrite: true
+    - name: prepare environment
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.11
+    - name: provision k8s cluster
+      id: provision-cluster
+      env:
+        CONFIG_FILE_NAME: "k8s.config"
+      shell: bash
+      run: |
+        python3 ${GITHUB_ACTION_PATH}/provision-cluster.py --node-count=${{inputs.node-count}} --node-type=${{inputs.node-type}} --apikey=${{inputs.api-key}} --output=${CONFIG_FILE_NAME}
+
+        echo "config_file=${CONFIG_FILE_NAME}" >> $GITHUB_OUTPUT
+        echo "config_path=${PWD}/k8s.config" >> $GITHUB_OUTPUT
+
+        cat $GITHUB_OUTPUT
+    - name: show info
+      shell: bash
+      run: |
+        echo "config file is: ${{steps.provision-cluster.outputs.config_file}}"
+        echo "path to config is: ${{steps.provision-cluster.outputs.config_path}}"
+        echo "provisioned cluster id is: ${{steps.provision-cluster.outputs.clusterId}}"
+    - name: upload configuration file
+      uses: actions/upload-artifact@v4
+      with:
+        path: ${{steps.provision-cluster.outputs.config_path}}
+        name: ${{steps.provision-cluster.outputs.config_file}}
+        if-no-files-found: error
+        retention-days: 1
+        overwrite: true

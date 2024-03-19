@@ -43,7 +43,7 @@ try:
 
     clusterId = hres_data["clusterId"]
     print(f'provisioning cluster {clusterId}')
-     
+    clusterIp = ''
     while hres_data['stage'] != 'k8sReady' or hres_data['stageIndex'] < 9:
         time.sleep(3)
         conn.request('GET', f'/sc/cluster/{clusterId}', headers=req_headers)
@@ -51,6 +51,10 @@ try:
         if hres.status == 200:
             res_body = hres.read().decode('utf-8')
             hres_data = json.loads(res_body)
+
+            if hres_data['nodes']:
+                clusterIp=hres_data['nodes'][0]['ip']
+
         elif (hres.status == 404):
             print(f'cluster {clusterId} not found')
             exit(1)
@@ -72,6 +76,7 @@ try:
             output_file=os.environ.get('GITHUB_OUTPUT') if os.environ.get('GITHUB_OUTPUT') else 'clusterId.txt'
             with open(output_file,'at') as file:
               file.write(f'clusterId={clusterId}\n')
+              file.write(f'clusterIp={clusterIp}\n')
         else:
             print('failed to fetch configuration', hres.status)
             exit(1)
