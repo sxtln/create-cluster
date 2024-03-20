@@ -17,6 +17,9 @@ outputs:
   kube-config:
     description: "the name of the kube config file that was uploaded to "
     value: ${{ steps.provision-cluster.outputs.config-file }}
+  kube-config64:
+    description: "the k8s config file in the form of base64 string"
+    value: ${{ steps.provision-cluster.outputs.config-file64 }}
   cluster-ip:
     description: the ip of the cluster master node
     value: ${{ steps.provision-cluster.outputs.clusterIp}}
@@ -42,6 +45,7 @@ runs:
 
         echo "config_file=${CONFIG_FILE_NAME}" >> $GITHUB_OUTPUT
         echo "config_path=${PWD}/k8s.config" >> $GITHUB_OUTPUT
+        echo "config-file64=$(cat ${PWD}/k8s.config | base64 -w0)" >>$GITHUB_OUTPUT
 
         cat $GITHUB_OUTPUT
     - name: show info
