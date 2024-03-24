@@ -12,6 +12,7 @@ parser.add_argument('--node-count', type=int, default=1,
 parser.add_argument('--node-type', choices=['b1', 'b2'],
                     default='medium', help='size of a node in the cluster')
 parser.add_argument('--apikey',required=True)
+parser.add_argument('--cluster-name',required=False,help="a user denote name of the cluster")
 parser.add_argument('--output', default='k8s.config',
                     help='name of file to save the configuration to')
 
