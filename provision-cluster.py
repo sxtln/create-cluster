@@ -27,14 +27,20 @@ if args.node_count < 1 or args.node_count > 3:
 
 node_count = args.node_count
 node_type = args.node_type
+name=args.cluster_name
+
+
 
 req_headers = {'Authorization': f'Bearer {args.apikey}'}
 try:
     conn = http.client.HTTPSConnection('api.sextillion.io')
     req_data = {'nodeCount': node_count,
-                'nodeType': node_type, 'name': args.cluster_name}
+                'nodeType': node_type, 'name': name}
 
-    conn.request('POST', '/sc/cluster', json.dumps(req_data),
+    req_body=json.dumps(req_data)
+    print(f'request body is {req_body}')
+    
+    conn.request('POST', '/sc/cluster', req_body,
                  headers=req_headers)
     hres = conn.getresponse()
     if hres.status != 200:

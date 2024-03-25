@@ -10,7 +10,7 @@ inputs:
   api-key:
     description: "sextillion's api key"
     required: true
-  name:
+  cluster-name:
     description: "user own name of the cluster"
     required: false
     default: ''
@@ -47,7 +47,7 @@ runs:
         CONFIG_FILE_NAME: "k8s.config"
       shell: bash
       run: |
-        python3 ${GITHUB_ACTION_PATH}/provision-cluster.py --node-count=${{inputs.node-count}} --node-type=${{inputs.node-type}} --apikey=${{inputs.api-key}} --cluster-name=${{inputs.name}} --output=${CONFIG_FILE_NAME}
+        python3 ${GITHUB_ACTION_PATH}/provision-cluster.py --node-count=${{inputs.node-count}} --node-type=${{inputs.node-type}} --apikey=${{inputs.api-key}} --cluster-name='${{inputs.cluster-name}}' --output=${CONFIG_FILE_NAME}
 
         echo "config_file=${CONFIG_FILE_NAME}" >> $GITHUB_OUTPUT
         echo "config_path=${PWD}/k8s.config" >> $GITHUB_OUTPUT
