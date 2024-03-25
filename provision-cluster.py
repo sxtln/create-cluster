@@ -31,9 +31,10 @@ name=args.cluster_name
 
 
 
-req_headers = {'Authorization': f'Bearer {args.apikey}'}
+req_headers = {'Authorization': f'Bearer {args.apikey}','Content-Type':'application/json'}
 try:
     conn = http.client.HTTPSConnection('api.sextillion.io')
+    
     req_data = {'nodeCount': node_count,
                 'nodeType': node_type, 'name': name}
 
